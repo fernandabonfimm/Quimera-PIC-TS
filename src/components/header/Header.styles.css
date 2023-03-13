@@ -1,0 +1,10 @@
+.header-default {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #fff;
+  height: 100%;
+  padding: 1.5em 5em 1em 5em;
+}
+
+

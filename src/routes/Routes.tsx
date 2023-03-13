@@ -1,70 +1,32 @@
-import React from "react";
-import { Route, Navigate, RouteProps } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Home from "../pages/home";
-import LoginPin from "../pages/loginPin";
+import Login from "../pages/login";
+import LoginPin from "../pages/student/loginPin";
+import LoginTeacher from "../pages/teacher/login/LoginTeacher";
+import ForgotPassword from "../pages/teacher/forgotPassword/ForgotPassword";
+import RegisterTeacher from "../pages/teacher/register/RegisterTeacher";
 
-
-interface PrivateRouteProps extends RouteProps {
-  isAuthenticated: boolean;
-  component: React.ComponentType<any>;
-  path: string;
-  exact?: boolean;
+function isUserLoggedIn() {
+  // Verifique se o usuário está logado (por exemplo, verificando se há um token de autenticação no local storage)
+  return localStorage.getItem("token") !== null;
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({
-  isAuthenticated,
-  component: Component,
-  path: path,
-  exact: exact,
-  ...rest
-}) => (
-  <Route
-    {...rest}
-    render={(props: any) =>
-      isAuthenticated ? (
-        <Component {...props} />
-      ) : (
-        <Navigate to={{ pathname: "/login", state: { from: props.location } }} />
-      )
-    }
-  />
-);
+export const RoutesComponent = () => {
+  return (
+    <Routes>
+      {/* Rotas públicas */}
+      <Route path="/character" element={<Login />} />
+      <Route path="/" element={<Home />} />
+      <Route path="/student/login" element={<LoginPin />} />
+      <Route path="/teacher/login" element={<LoginTeacher />} />
+      <Route path="/teacher/forgotPassword" element={<ForgotPassword />} />
+      <Route path="/teacher/register" element={<RegisterTeacher />} />
 
-interface PublicRouteProps extends RouteProps {
-  isAuthenticated: boolean;
-  component: React.ComponentType<any>;
-  path: string;
-  exact?: boolean;
-}
-
-const PublicRoute: React.FC<PublicRouteProps> = ({
-  isAuthenticated,
-  component: Component,
-  path: path,
-  exact: exact,
-  ...rest
-}) => (
-  <Route
-    {...rest}
-    render={(props:any) =>
-      isAuthenticated ? <Navigate to="/" /> : <Component {...props} />
-    }
-  />
-);
-
-export const Routes = ({ isAuthenticated }: { isAuthenticated: boolean }) => (
-  <>
-    <PublicRoute
-      path="/"
-      component={Home}
-      isAuthenticated={isAuthenticated}
-      exact
-    />
-    <PrivateRoute
-      path="/dashboard"
-      component={LoginPin}
-      isAuthenticated={isAuthenticated}
-      exact
-    />
-  </>
-);
+      {/* Rotas privadas */}
+      <Route
+        path="/"
+        element={isUserLoggedIn() ? <LoginPin /> : <Navigate to="/login" />}
+      />
+    </Routes>
+  );
+};
